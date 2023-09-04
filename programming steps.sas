@@ -31,3 +31,19 @@ dob2 = input(dob, mmddyy10.);
 /* calculating age of subjects*/
 age = (diagdt - dob2) / 365;
 run;
+
+/* OBTAINING SUMMARY STATISTICS FOR AGE BY TREATMENT GROUP USING PROC MEANS*/
+/* we have to obtain the output from proc means in a dataset form, hence the output statement in the proc means procedure;
+/* this dataset form is stored in agestats dataset*/
+/* this output corresponds to the total number of subjects*/
+/* utilizing by statement in proc means to generate summary statistics for each treatment group*/
+/* it is necessary to sort demog1 by trt before running the proc means procedure*/
+/* the sorted table is seen in demog1_sorted*/
+proc sort data = demog1 out = work.demog1_sorted;
+by trt;
+run;
+proc means data = demog1_sorted;
+var age;
+output out = agestats;
+by trt;
+run;
