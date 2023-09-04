@@ -10,3 +10,6 @@ PROC IMPORT OUT= WORK.demog
      USEDATE=YES;
      SCANTIME=YES;
 RUN;
+/* VERIFYING CONTENTS OF THE DEMOG DATASET*/
+proc contents data = work.demog;
+run;
