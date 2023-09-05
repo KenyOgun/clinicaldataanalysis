@@ -95,5 +95,17 @@ data demog3;
 	racec = put(race, racefmt.);
 run;
 
+/* obtaining summary statistics for race*/
+/* new dataset stored in racestats*/
+proc freq data = demog3 noprint;
+table trt*racec / outpct out = racestats;
+run;
+
+data racestats;
+	set racestats;
+	value = cat(count, ' (', strip(put(round(pct_row, .1),8.1)),'%)' );
+run;
+
+
 
 
