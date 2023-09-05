@@ -78,5 +78,22 @@ data genderstats;
 	value = cat(count, ' (', round(pct_row, .1), '%)');
 run;
 
+/* obtaining statistical parameters for race*/
+/* creating format racefmt*/
+proc format;
+value racefmt
+1 = 'White'
+2 = 'Black'
+3 = 'Hispanic'
+4 = 'Asian'
+5 = 'Other'
+;
+run;
+
+data demog3;
+	set demog2;
+	racec = put(race, racefmt.);
+run;
+
 
 
