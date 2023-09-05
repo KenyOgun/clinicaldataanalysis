@@ -54,6 +54,7 @@ run;
 
 /* OBTAINING STATISTICAL PARAMETERS FOR GENDER*/
 /* running proc format in order to assign labels to the gender*/
+/*creating a new dataset called demog2 with the formatted values*/
 proc format;
 value genfmt
 1 = 'Male'
