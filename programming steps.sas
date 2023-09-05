@@ -106,6 +106,39 @@ data racestats;
 	value = cat(count, ' (', strip(put(round(pct_row, .1),8.1)),'%)' );
 run;
 
+/* stacking all three summary statistics together*/
+/* making modifications to agestats, genderstats and racestats before stacking*/
+/* for agestats renaming _stat_ variable to stat and converting age variable into the value variable of character type sa
+ve in agestats1*/
+/* for genderstats rename sex variable to stat, save in genderstats1*/
+/* for racestats rename racec variable to stat, save in racestats1*/
+data agestats1;
+	set agestats;
+	value = put(age, 8.);
+	rename _stat_ = stat;
+	drop _type_ _freq_ age;
+run;
+
+data genderstats1;
+	set genderstats;
+	value = cat(count, ' (', round(pct_row, .1), '%)');
+	rename sex = stat;
+	drop count percent pct_row pct_col;
+run;
+
+data racestats1;
+	set racestats;
+	value = cat(count, ' (', strip(put(round(pct_row, .1),8.1)),'%)' );
+	rename racec = stat;
+	drop count percent pct_row pct_col;
+run;
+
+/*appending all stats together in new dataset called allstats*/
+data allstats;
+	set agestats1 genderstats1 racestats1;
+run;
+
+
 
 
 
