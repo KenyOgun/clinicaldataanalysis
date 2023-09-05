@@ -46,9 +46,24 @@ run;
 proc sort data = demog1 out = work.demog1_sorted;
 by trt;
 run;
-proc means data = demog1_sorted;
+proc means data = demog1_sorted noprint;
 var age;
 output out = agestats;
 by trt;
 run;
+
+/* OBTAINING STATISTICAL PARAMETERS FOR GENDER*/
+/* running proc format in order to assign labels to the gender*/
+proc format;
+value genfmt
+1 = 'Male'
+2 = 'Female'
+;
+run;
+
+data demog2;
+	set demog1;
+	sex = put(gender, genfmt.);
+run;
+
 
