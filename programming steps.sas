@@ -75,6 +75,7 @@ run;
 /* concatenating the count and percent variables in genderstats*/
 data genderstats;
 	set genderstats;
+	length value $ 10;
 	value = cat(count, ' (', round(pct_row, .1), '%)');
 run;
 
@@ -114,6 +115,7 @@ ve in agestats1*/
 /* for racestats rename racec variable to stat, save in racestats1*/
 data agestats1;
 	set agestats;
+	length value $10.;
 	value = put(age, 8.);
 	rename _stat_ = stat;
 	drop _type_ _freq_ age;
@@ -121,6 +123,7 @@ run;
 
 data genderstats1;
 	set genderstats;
+	length value $ 10;
 	value = cat(count, ' (', round(pct_row, .1), '%)');
 	rename sex = stat;
 	drop count percent pct_row pct_col;
@@ -128,6 +131,7 @@ run;
 
 data racestats1;
 	set racestats;
+	length value $ 10;
 	value = cat(count, ' (', strip(put(round(pct_row, .1),8.1)),'%)' );
 	rename racec = stat;
 	drop count percent pct_row pct_col;
@@ -138,6 +142,28 @@ data allstats;
 	set agestats1 genderstats1 racestats1;
 run;
 
+/*fixing issues in allstats by making modifications in the contributing datasets*/
+/* fixing precision points*/
+/* fixing agestats and putting in a new dataset called agestats2*/
+data agestats2;
+	set agestats;
+	if stat = 'N' then value = strip(put(age, 8.));
+	else if stat = 'MEAN' then value = strip(put(age, 8.1));
+	else if stat = 'STD' then value = strip(put(age, 8.2));
+	else if stat = 'MIN' then value = strip(put(age, 8.1));
+	else if stat = 'MAX' then value = strip(put(age, 8.1));
+	drop _type_ _freq_ age _stat_;
+run;
+/* new allstats using modified agestats2*/
+/* fixing the precision points*/
+/* using the length statement to determine the order of the variables*/
+data allstats;
+length trt 8 stat $8 value $10;
+	set agestats2 genderstats1 racestats1;
+run;
+
+proc contents data = work.allstats;
+run;
 
 
 
