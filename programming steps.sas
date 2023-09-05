@@ -72,3 +72,11 @@ proc freq data = demog2 noprint;
 table trt*sex / outpct out = genderstats;
 run;
 
+/* concatenating the count and percent variables in genderstats*/
+data genderstats;
+	set genderstats;
+	value = cat(count, ' (', round(pct_row, .1), '%)');
+run;
+
+
+
