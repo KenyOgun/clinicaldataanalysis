@@ -66,5 +66,9 @@ data demog2;
 	set demog1;
 	sex = put(gender, genfmt.);
 run;
-
+/* creating a two dimensional table using proc freq*/
+/* putting the results in dataset form into a new table called genderstats*/
+proc freq data = demog2 noprint;
+table trt*sex / outpct out = genderstats;
+run;
 
