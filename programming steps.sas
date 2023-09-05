@@ -1,6 +1,6 @@
 /* IMPORTING THE EXCEL DEMOGRAPHICS DATA INTO SAS*/
-
-PROC IMPORT OUT= WORK.demog 
+libname dmg 'c:\MySASLib\demogdata\';
+PROC IMPORT OUT= dmg.demog 
             DATAFILE= "C:\oncologystudydocs\demog.xls" 
             DBMS=EXCEL REPLACE;
      RANGE="demog$"; 
