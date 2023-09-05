@@ -30,6 +30,10 @@ dob2 = input(dob, mmddyy10.);
 /*dob2 can now be used for calculation of age variable since it is numeric and has date 9 format*/
 /* calculating age of subjects*/
 age = (diagdt - dob2) / 365;
+/* adding the third treatment group using explicit output*/
+output;
+trt = 2;
+output;
 run;
 
 /* OBTAINING SUMMARY STATISTICS FOR AGE BY TREATMENT GROUP USING PROC MEANS*/
@@ -47,3 +51,4 @@ var age;
 output out = agestats;
 by trt;
 run;
+
