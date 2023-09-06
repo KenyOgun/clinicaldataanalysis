@@ -1,7 +1,5 @@
 /* IMPORTING THE EXCEL DEMOGRAPHICS DATA INTO SAS*/
-/* created a permanent library dmg*/
-libname dmg 'c:\MySASLib\demogdata\';
-PROC IMPORT OUT= dmg.demog 
+PROC IMPORT OUT=demog 
             DATAFILE= "C:\oncologystudydocs\demog.xls" 
             DBMS=EXCEL REPLACE;
      RANGE="demog$"; 
@@ -12,13 +10,13 @@ PROC IMPORT OUT= dmg.demog
      SCANTIME=YES;
 RUN;
 /* VERIFYING CONTENTS OF THE DEMOG DATASET*/
-proc contents data = dmg.demog;
+proc contents data = work.demog;
 run;
 
 /* DERIVING THE AGE VARIABLE*/
 
-data dmg.demog1;
-	set dmg.demog;
+data demog1;
+	set demog;
 	format dob2 date9.;
 /*creating a new variable for date of birth*/
 /* using the cat function to concatenate month, day and year resulting in dob column*/
@@ -44,45 +42,45 @@ run;
 /* utilizing by statement in proc means to generate summary statistics for each treatment group*/
 /* it is necessary to sort demog1 by trt before running the proc means procedure*/
 /* the sorted table is seen in demog1_sorted*/
-proc sort data = dmg.demog1 out = dmg.demog1_sorted;
+proc sort data = demog1 out = work.demog1_sorted;
 by trt;
 run;
-proc means data = dmg.demog1_sorted noprint;
+proc means data = demog1_sorted noprint;
 var age;
-output out = dmg.agestats;
+output out = agestats;
 by trt;
 run;
 
 /* OBTAINING STATISTICAL PARAMETERS FOR GENDER*/
 /* running proc format in order to assign labels to the gender*/
 /*creating a new dataset called demog2 with the formatted values*/
-proc format library=dmg;
+proc format;
 value genfmt
 1 = 'Male'
 2 = 'Female'
 ;
 run;
-options fmtsearch = (dmg);
-data dmg.demog2;
-	set dmg.demog1;
+
+data demog2;
+	set demog1;
 	sex = put(gender, genfmt.);
 run;
 /* creating a two dimensional table using proc freq*/
 /* putting the results in dataset form into a new table called genderstats*/
-proc freq data = dmg.demog2 noprint;
-table trt*sex / outpct out = dmg.genderstats;
+proc freq data = demog2 noprint;
+table trt*sex / outpct out = genderstats;
 run;
 
 /* concatenating the count and percent variables in genderstats*/
-data dmg.genderstats;
-	set dmg.genderstats;
+data genderstats;
+	set genderstats;
 	length value $ 10;
 	value = cat(count, ' (', round(pct_row, .1), '%)');
 run;
 
 /* obtaining statistical parameters for race*/
 /* creating format racefmt*/
-proc format library=dmg;
+proc format;
 value racefmt
 1 = 'White'
 2 = 'Black'
@@ -91,9 +89,9 @@ value racefmt
 5 = 'Other'
 ;
 run;
-options fmtsearch = (dmg);
-data dmg.demog3;
-	set dmg.demog2;
+
+data demog3;
+	set demog2;
 	racec = put(race, racefmt.);
 run;
 
@@ -114,11 +112,14 @@ run;
 ve in agestats1*/
 /* for genderstats rename sex variable to stat, save in genderstats1*/
 /* for racestats rename racec variable to stat, save in racestats1*/
-data agestats1;
+data agestats7;
+rename _stat_ = stat;
 	set agestats;
-	length value $10.;
-	value = put(age, 8.);
-	rename _stat_ = stat;
+	if _stat_ = 'N' then value = strip(put(age, 8.));
+	else if _stat_ = 'MEAN' then value = strip(put(age, 8.1));
+	else if _stat_ = 'STD' then value = strip(put(age, 8.2));
+	else if _stat_ = 'MIN' then value = strip(put(age, 8.1));
+	else if _stat_ = 'MAX' then value = strip(put(age, 8.1));
 	drop _type_ _freq_ age;
 run;
 
@@ -137,35 +138,13 @@ data racestats1;
 	rename racec = stat;
 	drop count percent pct_row pct_col;
 run;
-
 /*appending all stats together in new dataset called allstats*/
-data allstats;
-	set agestats1 genderstats1 racestats1;
-run;
-
-/*fixing issues in allstats by making modifications in the contributing datasets*/
-/* fixing precision points*/
-/* fixing agestats and putting in a new dataset called agestats2*/
-data agestats2;
-	set agestats;
-	if stat = 'N' then value = strip(put(age, 8.));
-	else if stat = 'MEAN' then value = strip(put(age, 8.1));
-	else if stat = 'STD' then value = strip(put(age, 8.2));
-	else if stat = 'MIN' then value = strip(put(age, 8.1));
-	else if stat = 'MAX' then value = strip(put(age, 8.1));
-	drop _type_ _freq_ age _stat_;
-run;
-/* new allstats using modified agestats2*/
 /* fixing the precision points*/
 /* using the length statement to determine the order of the variables*/
-data allstats;
+data allstats10;
 length trt 8 stat $8 value $10;
-	set agestats2 genderstats1 racestats1;
+	set agestats7 genderstats1 racestats1;
 run;
 
-proc contents data = work.allstats;
+proc contents data = work.allstats10;
 run;
-
-
-
-
