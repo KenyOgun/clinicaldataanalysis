@@ -220,3 +220,12 @@ var value;
 id trt;
 by ord subord stat;
 run;
+/* constructing the final report*/
+proc report data = t_allstats11;
+columns ord subord stat _0 _1 _2;
+define ord / noprint order;
+define subord / noprint order;
+define stat / display width =50;
+define _0 / display width = 30;
+define _1 / display;
+run; 
