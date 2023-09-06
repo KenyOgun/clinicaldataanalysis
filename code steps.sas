@@ -160,3 +160,63 @@ var value;
 id trt;
 by stat;
 run;
+
+/* in each of the three datasets agestats7, genderstats1 and racestats1 we will create two new variables*/
+/* one called ord to indicate the order in ascending form i.e age, gender race*/
+/* the other is the subord to indicate the order within each stat category i.e n, mean, sd, min, max for age, male, female for 
+gender etc*/
+/*creating a new dataset called agestats8, genderstats2 and racestats2*/
+data agestats8;
+rename _stat_ = stat;
+	set agestats;
+	ord=1;
+	if _stat_ = 'N' then do; subord=1; value = strip(put(age, 8.)); end;
+	else if _stat_ = 'MEAN' then do; subord=2; value = strip(put(age, 8.1)); end;
+	else if _stat_ = 'STD' then do; subord=3; value = strip(put(age, 8.2)); end;
+	else if _stat_ = 'MIN' then do; subord=4; value = strip(put(age, 8.1));end;
+	else if _stat_ = 'MAX' then do; subord=5; value = strip(put(age, 8.1)); end;
+	drop _type_ _freq_ age;
+run;
+
+data genderstats2;
+	set genderstats;
+	length value $ 10;
+	value = cat(count, ' (', round(pct_row, .1), '%)');
+	ord = 2;
+	if sex = 'Male' then subord=1;
+	else subord = 2;
+	rename sex = stat;
+	drop count percent pct_row pct_col;
+run;
+
+data racestats2;
+	set racestats;
+	length value $ 10;
+	value = cat(count, ' (', strip(put(round(pct_row, .1),8.1)),'%)' );
+	ord=3;
+	if racec='Asian' then subord=1;
+	else if racec='Black' then subord=2;
+	else if racec='Hispanic' then subord=3;
+	else if racec='White' then subord=4;
+	else if racec='Other' then subord=5;
+	rename racec = stat;
+	drop count percent pct_row pct_col;
+run;
+
+/* appending agestats8, genderstats2 and racestats2 to get allstats11*/
+data allstats11;
+length trt 8 stat $8 value $10;
+	set agestats8 genderstats2 racestats2;
+run;
+
+/* transposing allstats11 data to bring it to a format consistent with the mock shell*/
+/*three columns for the three treatment groups as seen in the mock shell*/
+/*final table is t_allstats11*/
+proc sort data = allstats11 out = allstats11_sorted;
+by ord subord stat;
+run;
+proc transpose data = allstats11_sorted out = t_allstats11 prefix = _;
+var value;
+id trt;
+by ord subord stat;
+run;
