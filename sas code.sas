@@ -83,7 +83,7 @@ data genderstats;
 	else subord = 2;
 	
 rename sex= stat;
-drop count percent pct_col pct_row);
+drop count percent pct_col pct_row;
 run;
 
 /*obtain statistical parameters for race*/
@@ -151,6 +151,7 @@ length stat $30.;
 	 	_2='';
 	 output;
 	 end;
+	 run;
 	 
 proc sort data=final;
 by ord subord;
@@ -183,21 +184,3 @@ define _0 / display width =30 "Placebo| (N=&placebo)";
 define _1/ display width =30 "Active Treatment| (N=&active)";
 define _2 / display width =30 "All Patients| (N=&total)";
 run;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
