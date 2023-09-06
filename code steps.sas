@@ -148,3 +148,15 @@ run;
 
 proc contents data = work.allstats10;
 run;
+
+
+/* transposing data to bring it to a format consistent with the mock shell*/
+/*three columns for the three treatment groups as seen in the mock shell*/
+proc sort data = allstats10 out = allstats10_sorted;
+by stat;
+run;
+proc transpose data = allstats10_sorted out = t_allstats10 prefix = _;
+var value;
+id trt;
+by stat;
+run;
