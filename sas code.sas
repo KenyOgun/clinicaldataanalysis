@@ -1,5 +1,5 @@
 /*code for importing data from the excel sheet into SAS session*/
-FILENAME REFFILE '/folders/myshortcuts/myFolders/demog.xls';
+FILENAME REFFILE 'C:\oncologystudydocs\demog.xls';
 
 PROC IMPORT DATAFILE=REFFILE
 	DBMS=XLS
@@ -169,7 +169,7 @@ quit;
 %let total = &total;
 
 /*constructing the final report*/
-
+ODS RTF FILE = 'c:\MyRTFFiles\t_demog.rtf' BODYTITLE STARTPAGE = NO;
 title 'Table 1.1';
 title2 'Demographic and Baseline Characteristics by Treatment Group';
 title3 'Randomized Population';
@@ -184,3 +184,4 @@ define _0 / display width =30 "Placebo| (N=&placebo)";
 define _1/ display width =30 "Active Treatment| (N=&active)";
 define _2 / display width =30 "All Patients| (N=&total)";
 run;
+ODS RTF CLOSE;
