@@ -185,3 +185,5 @@ define _1/ display width =30 "Active Treatment| (N=&active)";
 define _2 / display width =30 "All Patients| (N=&total)";
 run;
 ODS RTF CLOSE;
+title;
+footnote;
